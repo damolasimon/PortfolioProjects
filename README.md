@@ -153,7 +153,7 @@ sleep_records_clean %>%
 
 Taking a look at the summary of our datasets, we observed that both daily_steps and daily_calories datasets are not giving us additional insights and we’ll not be including them in further analysis.
 
- ## STEP 4.2 Merging Datasets and Removing Duplicates
+ ### STEP 4.2 Merging Datasets and Removing Duplicates
 At this stage, we’ll be looking at combining both our sleep_records dataset and daily_activity_clean dataset. We’ll then remove duplicates and check our merged data to make sure it is ready for further analysis.
 ```
 #rename date column and change type to date
@@ -341,7 +341,7 @@ total_time_in_bed	530	0.44	4.584800e+02	1.274600e+02	61	4.037500e+02	4.630000e+0
 To get interesting insights from our merged datasets, we’ll be comparing different variables from our datasets and viewing relationships via plots.
 
 
-5.1 # Measuring Relationships between Variables
+### STEP 5.1 - Measuring Relationships between Variables
 ```
 #PLOT_1 To observe the distribution of time spent sleeping by participants.
 ggplot(data = merged_data_unique, mapping = aes(total_minutes_asleep)) + 
@@ -349,7 +349,7 @@ ggplot(data = merged_data_unique, mapping = aes(total_minutes_asleep)) +
   labs(title="Distribution of Total Time Asleep", x="Total Time Asleep (minutes)") + 
   theme_classic()
 ```
-![Distribution]
+![Sleep Distribution](https://github.com/damolasimon/PortfolioProjects/blob/main/Images/time_asleep_distribution.png)
 
 ```
 #PLOT_2 Burnt calories vs total steps - To check the relationship between steps_taken and calories_burnt
@@ -359,7 +359,7 @@ ggplot(data = merged_data_unique, mapping = aes(x = total_steps, y = calories)) 
   theme_bw() +
   labs(title = "Burnt Calories vs Total Steps")
 ```
-
+![Burnt Calories and Steps](https://github.com/damolasimon/PortfolioProjects/blob/main/Images/burntCalories_totalTime.png)
 ```
 #PLOT_3 total time_in_bed vs total_time_asleep 
 plot_3 <- ggplot(data = merged_data_unique, mapping= aes(x = total_time_in_bed , y = total_minutes_asleep)) + 
@@ -380,13 +380,23 @@ plot_4 <-  ggplot(data = merged_data_unique, mapping = aes(x = sedentary_minutes
 (plot_3 + plot_4) + 
     plot_annotation(title = 'Sleep duration compared to Time in Bed and Sedentary Time') + 
     plot_layout(ncol = 2, widths = c(2,2))
+```
+
+![Sleep Duration](https://github.com/damolasimon/PortfolioProjects/blob/main/Images/sleepdurations.png)
 
 Key findings based on our analysis and plots include:
-•	The sleep distribution of our participants shows that majority sleep less than the the daily recommendation of 8 hours per day.
-•	It seems the less active our participants become, the less actual sleep they get.
-•	All participants records less than the CDC recommended 10,000 daily steps for an active adult.
-•	It appears that a positive relationship exists between total steps and calories burnt.
-5.2 ## Measuring Daily Data In the next plots, it will be good to see how the steps_taken by participants, burnt_calories and total_sleep varies on each day of the week. To do this, we need to carry out some data aggregation and summary as shown below:
+
+* The sleep distribution of our participants shows that majority sleep less than the the daily recommendation of 8 hours per day.
+* It seems the less active our participants become, the less actual sleep they get.
+* All participants records less than the CDC recommended 10,000 daily steps for an active adult.
+* It appears that a positive relationship exists between total steps and calories burnt.
+
+
+### 5.3 Measuring Daily Data 
+
+In the next plots, it will be good to see how the steps_taken by participants, burnt_calories and total_sleep varies on each day of the week. To do this, we need to carry out some data aggregation and summary as shown below:
+
+```
 #computing total steps by weekday
 total_steps_by_weekday <- merged_data_unique %>% group_by(weekday) %>%
   summarise(steps= sum(total_steps, na.rm = TRUE), 
@@ -401,7 +411,9 @@ total_calories_by_weekday <- merged_data_unique %>% group_by(weekday)%>%
 sleep_by_weekday <- merged_data_unique %>% group_by(weekday) %>%
   summarise(total_sleep = sum(total_minutes_asleep, na.rm = TRUE), 
             average_sleep = mean(total_minutes_asleep, na.rm = TRUE))
- 
+```
+
+```
 #PLOT_5 Day of the week vs average steps
 plot_5 <- ggplot(data = total_steps_by_weekday, mapping = aes(x = reorder(weekday, -Mean), y = Mean)) +
     geom_col(fill = "#fa9169") + 
@@ -420,17 +432,35 @@ plot_6 <- ggplot(data = total_calories_by_weekday, mapping = aes(x = reorder(wee
 (plot_5 + plot_6) +
     plot_annotation(title = 'Average Steps and Average Calories burnt on different Days of the Weeek') + 
     plot_layout(ncol = 2, widths = c(1,1))
- 
+
+```
+![StepsVsCalories](https://github.com/damolasimon/PortfolioProjects/blob/main/Images/averagesteps_averagecalories.png)
+
+
+```
 #PLOT_7 Day of the week vs Sleep 
 ggplot(data = sleep_by_weekday, mapping = aes(x = reorder(weekday, -average_sleep), y = average_sleep)) + 
   geom_col(fill="#ff7c43" ) + 
   geom_hline(yintercept = 480) +
   labs(title = "Average sleep in minutes by day_of_week", y = "Average Sleep (minutes)", x = "Days of the Week") + 
   theme_classic()
- 
-Further important findings based day of the week include the following: * Highest number of average steps taken was recored on Saturday while the least was recorded on Sunday. * Maximum amount of average calories burnt was recorded on Saturday while the least was recorded on Sunday. This agrees with our earlier findings about the average stpes and calories burnt. * The least amount of sleep was recorded on Thursday, and highest was recorded on Sunday.
-5.3 # Grouping Participants
-Finally, I think it will be interesting to categorize participants on the level of their activity. This classification will be based on whether participants are sedentary, lightly active, fairly active or very active. The source used for the categorisation can be found by clicking on this link.
+ ```
+
+![SleepVsWeekdays](https://github.com/damolasimon/PortfolioProjects/blob/main/Images/averagesleep_dayofweek.png)
+
+Further important findings based day of the week include the following:
+
+* Highest number of average steps taken was recored on Saturday while the least was recorded on Sunday.
+
+* Maximum amount of average calories burnt was recorded on Saturday while the least was recorded on Sunday. This agrees with our earlier findings about the average stpes and calories burnt.
+
+* The least amount of sleep was recorded on Thursday, and highest was recorded on Sunday.
+  
+ ### 5.3 Grouping Participants
+Finally, it will be interesting to categorize participants on the level of their activity. This classification will be based on whether participants are sedentary, lightly active, fairly active or very active. The source used for the categorisation can be found by clicking on [here](https://www.medicinenet.com/how_many_steps_a_day_is_considered_active/article.htm)
+
+
+```
 #Group participants into different categories
 daily_activity_average <- merged_data_unique %>%
   group_by(id) %>%
@@ -443,8 +473,11 @@ daily_activity_average <- merged_data_unique %>%
     daily_steps_average >= 7499 & daily_steps_average < 9999 ~ "fairly_active",
     daily_steps_average >= 10000 ~ "very_active"
   ))
+```
 
+```
 #verify the daily_activity_average
+
 head(daily_activity_average)
 ## # A tibble: 6 × 5
 ##           id daily_calories_average daily_steps_average daily_sleep_average
@@ -456,22 +489,18 @@ head(daily_activity_average)
 ## 5 1927972279                  2173.                916.                417 
 ## 6 2022484408                  2510.              11371.                NaN 
 ## # ℹ 1 more variable: user_categories <chr>
+```
+
+```
 #Getting the fraction of active categories
 usertype_data <- daily_activity_average %>%
   group_by(user_categories) %>%
   summarise(total = n()) %>%
   mutate(category_fraction = (total/sum(total)))
+```
 
-#verify usertype data 
-usertype_data
-## # A tibble: 4 × 3
-##   user_categories total category_fraction
-##   <chr>           <int>             <dbl>
-## 1 fairly_active       9             0.273
-## 2 lightly_active      9             0.273
-## 3 sedentary           8             0.242
-## 4 very_active         7             0.212
-# PLOT 8: Doughnut chart of participants on activity levels - The very active category represents the smallest group of the entire sample accounting for only 21.21%. 
+```
+# PLOT 8: Doughnut chart of participants on activity levels 
 usertype_distribution <- usertype_data %>%
   mutate(ymax = cumsum(category_fraction)) %>%
   mutate(ymin = c(0, head(ymax, n=-1))) %>%
@@ -488,15 +517,19 @@ ggplot(usertype_distribution, aes(
   theme_void() + 
   annotate("text", x = 0, y = 0, label = "Sample size\n= 33", size = 6) + 
   theme(legend.position = "none", plot.title = element_text(size = 19, hjust = 0.5))
+```
+![usercategories](https://github.com/damolasimon/PortfolioProjects/blob/main/Images/users_categories.png)
  
 Final observation based on grouping participants based on their activity levels reveals the following:
-•	The very active group accounts for only 21.21% of the total participants and represents the smallest group.
-•	The lightly active and failry active group accounts for 27.27% and represents the largest group.
+
+* The very active group accounts for only 21.21% of the total participants and represents the smallest group.
+* The lightly active and failry active group accounts for 27.27% and represents the largest group.
+
+
 ## STEP 6 Act - Recommendation
 Looking at the key findings from our analysis phase, we can make the following recommendations based on those:
-•	It will be an interesting and potential selling point for customers if the Bellabeat app could be designed to measure the relationship between suboptimal sleeping habits and stress levels.
-•	The app could be modified to include push notifications or reminders that encourage more activities on days with high sedentary levels like Sundays.
-•	The app could be designed to show health benefits associated with keeping an active lifestyle. This will encourage users to engage the app more often in achieving their exercise goals.
-•	The app could be designed to encourage the development of healthy communities through the formation of work-out groups and clubs. This will help customers to attain their health goals whilst fostering social interaction and integration.
 
-![image](https://github.com/damolasimon/PortfolioProjects/assets/35555470/e0ecc14f-266c-430e-93a7-8c1c9ecda8d6)
+* It will be an interesting and potential selling point for customers if the Bellabeat app could be designed to measure the relationship between suboptimal sleeping habits and stress levels.
+* The app could be modified to include push notifications or reminders that encourage more activities on days with high sedentary levels like Sundays.
+* The app could be designed to show health benefits associated with keeping an active lifestyle. This will encourage users to engage the app more often in achieving their exercise goals.
+* The app could be designed to encourage the development of healthy communities through the formation of work-out groups and clubs. This will help customers to attain their health goals whilst fostering social interaction and integration.
