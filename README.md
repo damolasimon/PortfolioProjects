@@ -392,7 +392,7 @@ Key findings based on our analysis and plots include:
 * It appears that a positive relationship exists between total steps and calories burnt.
 
 
-### 5.3 Measuring Daily Data 
+### 5.2 Measuring Daily Data 
 
 In the next plots, it will be good to see how the steps_taken by participants, burnt_calories and total_sleep varies on each day of the week. To do this, we need to carry out some data aggregation and summary as shown below:
 
